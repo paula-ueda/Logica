@@ -16,22 +16,23 @@ defmodule Utils do
 		Enum.concat(b, a) |> Enum.uniq
 	end
 
-	def reflexive_closure(lista_pares) do
-		lista_pares_reflexivos = Recor_reflexive.reflexive(Utils.findAllElements(lista_pares), [])
+end
+
+defmodule Closure do
+	def reflexive(lista_pares) do
+		lista_pares_reflexivos = Reflexive.loop1(Utils.findAllElements(lista_pares), [])
 		Utils.union(lista_pares, lista_pares_reflexivos)
 	end
-
-	def transitive_closure(lista_pares) do
+	def transitive(lista_pares) do
 		lista_pares_transitivos = Transitive.loop1(lista_pares, [])
 		lista_pares_transitivos
 	end
-
-	def reflexive_transitive_closure(lista_pares) do
-		aux = Utils.reflexive_closure(lista_pares)
-		Utils.transitive_closure(aux)
+	def reflexive_transitive(lista_pares) do
+		aux = Closure.reflexive(lista_pares)
+		Enum.sort(Closure.transitive(aux))
 	end
-
 end
+
 
 defmodule Elements do
 	def loop1(lista_pares, lista_elementos) when length(lista_pares) <= 0 do
@@ -46,14 +47,14 @@ defmodule Elements do
 	end
 end
 
-defmodule Recor_reflexive do
-	def reflexive(lista_elementos, lista_pares_reflexivos) when length(lista_elementos) <=0 do
+defmodule Reflexive do
+	def loop1(lista_elementos, lista_pares_reflexivos) when length(lista_elementos) <=0 do
 		lista_pares_reflexivos
 	end
-	def reflexive(lista_elementos, lista_pares_reflexivos) do
+	def loop1(lista_elementos, lista_pares_reflexivos) do
 		[first|rest] = lista_elementos
 		lista_pares_reflexivos = Utils.union(lista_pares_reflexivos, [[first, first]])
-		lista_pares_reflexivos = Recor_reflexive.reflexive(rest, lista_pares_reflexivos)
+		lista_pares_reflexivos = Reflexive.loop1(rest, lista_pares_reflexivos)
 		lista_pares_reflexivos
 	end
 end
@@ -82,16 +83,50 @@ defmodule Transitive do
 		condicao = (x2==y1) && (Utils.belongs([x1, y2], lista_pares_transitivos) == false)
 		if condicao do
 			lista_pares_transitivos = Utils.union(lista_pares_transitivos, [[x1, y2]])
-			lista_pares_transitivos = Utils.transitive_closure(lista_pares_transitivos)
+			lista_pares_transitivos = Closure.transitive(lista_pares_transitivos)
 		end
 		lista_pares_transitivos = Transitive.loop2(rest, lista_pares_transitivos, x1, y1)
 	end
 end
 
+defmodule GetData do
+	def oneByOne(contador, conjunto) do
+		input = IO.gets "Par " <> to_string(contador) <> ":\n"
+		if input != "end\n" do
 
-lista_elementos = [1,2,3]
-lista_pares = [[1,4], [3,2], [4,2], [4,5], [5,3], [5,4], [5,6], [6,2]]
-resp = Enum.sort(Utils.reflexive_transitive_closure(lista_pares))
-IO.inspect resp, label: "The hope is"
+			if input =~ " " do
+				contador = contador+1
+				input = String.replace(input, "\n", "")
+				par = String.split(input, " ")
+
+				conjunto = Utils.union([par], conjunto)
+			else
+				conjunto = conjunto
+				IO.puts "Verifique se está no formato correto"	
+			end
+
+			conjuto = GetData.oneByOne(contador, conjunto)
+
+		else
+			conjunto = conjunto
+		end
+	end
+		def fromConsole() do
+		contador = 0
+
+		IO.puts "Insira os pares ordenados do conjunto desejado um a um como nos exemplos abaixo:\n1 2\n3 5\n7 9\nQuando desejar parar de escrever insira 'end'!\n\n"
+		conjunto = GetData.oneByOne(contador, [])
+		IO.inspect conjunto, label: "Input"
+		conjunto
+	end
+
+end
+
+
+IO.puts "PCS3856 - EP1: Fecho transitivo e reflexivo\n"
+lista_pares = GetData.fromConsole()
+
+resp = Closure.reflexive_transitive(lista_pares)
+IO.inspect resp, label: "Resultado"
 
 
