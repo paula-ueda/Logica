@@ -26,6 +26,11 @@ defmodule Utils do
 		lista_pares_transitivos
 	end
 
+	def reflexive_transitive_closure(lista_pares) do
+		aux = Utils.reflexive_closure(lista_pares)
+		Utils.transitive_closure(aux)
+	end
+
 end
 
 defmodule Elements do
@@ -54,7 +59,7 @@ defmodule Recor_reflexive do
 end
 
 defmodule Transitive do
-	def loop1(lista_pares, lista_pares_transitivos) when length (lista_pares) <= 0 do
+	def loop1(lista_pares, lista_pares_transitivos) when length(lista_pares) <= 0 do
 		lista_pares_transitivos
 	end 
 	def loop1(lista_pares, lista_pares_transitivos) do
@@ -85,8 +90,8 @@ end
 
 
 lista_elementos = [1,2,3]
-lista_pares = [[1,2], [2,3], [2,1], [3,2]]
-resp = Utils.transitive_closure(lista_pares)
+lista_pares = [[1,4], [3,2], [4,2], [4,5], [5,3], [5,4], [5,6], [6,2]]
+resp = Enum.sort(Utils.reflexive_transitive_closure(lista_pares))
 IO.inspect resp, label: "The hope is"
 
 
