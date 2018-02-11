@@ -123,10 +123,11 @@ defmodule GetData do
 end
 
 
-IO.puts "PCS3856 - EP1: Fecho transitivo e reflexivo\n"
+IO.puts "PCS3856 - EP1: Fecho transitivo e reflexivo\n\n
+  Damaris Andreia Cardona   8471348
+  Paula Ueda                8042482\n
+---------------------------------------------\n"
 lista_pares = GetData.fromConsole()
 
 resp = Closure.reflexive_transitive(lista_pares)
 IO.inspect resp, label: "Resultado"
-
-
